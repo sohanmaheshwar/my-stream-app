@@ -77,7 +77,7 @@ function typeMessage(role, content) {
 
 // Function to handle sending a message to the generation API
 async function sendMessageToAPI(id, content) {
-	let response = await fetch("/api/generate", { method: "POST", body: JSON.stringify({ id: id, content: content }) });
+	let response = await fetch("/api/generate", { method: "POST", body: JSON.stringify({ id: id, role: "User", content: content }) });
 	typeMessage("Assistant", await response.text());
 }
 
@@ -108,10 +108,10 @@ messageInput.addEventListener('keydown', (event) => {
 
 clearButton.addEventListener('click', async () => {
 	window.localStorage.removeItem(conversationIdKey);
+	await fetch(`/api/${conversationId}`, { method: "DELETE" });
 	conversationId = getOrSetConversationId();
 	notify("Clearing history and starting new conversation.");
 	chatHistory.innerHTML = '';
-	// await fetch(`/api/${conversationId}`, { method: "DELETE" });
 });
 
 function uuidv4() {
