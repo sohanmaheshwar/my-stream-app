@@ -2,6 +2,7 @@ const chatHistory = document.querySelector('.chat-history');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 const clearButton = document.getElementById('clear-button');
+const summary = document.getElementById('summary');
 
 const conversationIdKey = "conversationId";
 
@@ -79,6 +80,10 @@ function typeMessage(role, content) {
 async function sendMessageToAPI(id, content) {
 	let response = await fetch("/api/generate", { method: "POST", body: JSON.stringify({ id: id, role: "User", content: content }) });
 	typeMessage("Assistant", await response.text());
+
+	let s = await fetch(`/api/summary/${id}`, { method: "POST" });
+	let text = await s.json();
+	summary.innerHTML = text.summary;
 }
 
 // Event listener for send button click
