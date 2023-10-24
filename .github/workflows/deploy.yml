@@ -1,0 +1,34 @@
+name: Deploy
+
+# Deploy only when a change is pushed or merged to `main`
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  spin:
+    runs-on: ubuntu-latest
+    name: Build and deploy
+    steps:
+      - uses: actions/checkout@v3
+
+      # TypeScript/JavaScript build requires the js2wasm plugin
+      - name: Install Spin
+        uses: fermyon/actions/spin/setup@v1
+        with:
+          plugins: js2wasm
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.73
+          targets: wasm32-wasi
+
+      - name: Run npm install
+        run: cd api && npm install
+
+      - name: Build and deploy
+        uses: fermyon/actions/spin/deploy@v1
+        with:
+          fermyon_token: ${{ secrets.FERMYON_CLOUD_TOKEN }}
